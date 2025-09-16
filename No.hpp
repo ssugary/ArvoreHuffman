@@ -21,7 +21,18 @@ namespace no {
             this->caractere = caractere;
             this->freq = freq;
         }
-        
+        No(No* no) {    //construtor para criar combinações
+            filhoEsq = no->filhoEsq;
+            filhoDir = no->filhoDir;
+            caractere = no->caractere;
+            freq = no->freq;
+        }
+        No(No* no1, No* no2) {    //construtor para criar combinações
+            filhoEsq = no1;
+            filhoDir = no2;
+            caractere = no1->caractere + "+" + no2->caractere;
+            freq = no1->freq + no2->freq;
+        }
         ~No() {                 //destrutor do nó
             delete filhoDir;
             delete filhoEsq;

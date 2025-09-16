@@ -103,7 +103,48 @@ void Huffman::printTabela(){            //apenas para teste: printa todos os nó
     while(!contador.priorityQueue.empty()){
         no::No* no = contador.priorityQueue.top();
         contador.priorityQueue.pop();
-        std::cout << "( "<< no->caractere << ", " << no->freq << ") ";
+        std::cout << "( "<< no->caractere << ", " << no->freq << ", "<< no->codigo<< ") ";
         std::cout << std::endl;
+    }
+}
+no::No* Huffman::montarArvore(){ //com base na frequência monta a arvore
+    cf::ContadorDeFrequencia copia; //cria uma cópia a fim de preserva a lista original
+    copia.priorityQueue=contador.priorityQueue;
+    while(copia.priorityQueue.size()>1){//pegamos de dois em dois elementos até forma o nó raiz por isso a condição de parada é quando chegar a 1
+        no::No* no1=new no::No(copia.priorityQueue.top()); // cria um ponteiro que copia o primeiro elemento
+        copia.priorityQueue.pop();
+        no::No* no2=new no::No(copia.priorityQueue.top());
+        copia.priorityQueue.pop();
+        copia.priorityQueue.push(new no::No(no1,no2));//cria um novo elemento que é a combinação de outros dois e o insere na fila 
+    }
+    ArvoreDeHuffman=copia.priorityQueue.top();//o nó raiz é ele
+    return ArvoreDeHuffman;
+}
+int Huffman::mostrarArvore(no::No* nodo){//mostra a arvore mas toda feia =(
+    std::cout<<nodo->caractere<<" ";
+    if(nodo->filhoEsq != nullptr && nodo->filhoDir != nullptr){
+        return mostrarArvore(nodo->filhoEsq) + mostrarArvore(nodo->filhoDir);
+    }
+    else{
+        return 0;
+    }
+}
+std::string Huffman::fazercodigo(std::string alvo,no::No* busca,std::string codigo){//cria o código de 1 elemento apenas
+    if(alvo==busca->caractere){//achei o elemento então retorno seu código
+        return codigo;
+    }
+    else if(busca->filhoDir == nullptr){//veja a chamada e recursiva e volte. Voltou? chamamos a função em todos os nóss, se caso chegarmos em uma folha e ela não é o alvo apenas retornamos uma string vazia para não influenciar no resultado final
+        return "";
+    }
+    else{//por fim, chegamos aqui e nada.Agora, vamos para nó a esquerda e para o nó a direita, também veja que eles já carregam uma informação sobre o caminho de onde vieram
+        return fazercodigo(alvo,busca->filhoEsq, codigo+"0") + fazercodigo(alvo,busca->filhoDir,codigo+"1");
+    }
+}
+void Huffman::codificar(){//cria o código de todos
+    cf::ContadorDeFrequencia copia;// copiamos para não alterar a original, ela pode ser útil mas tarde
+    copia.priorityQueue=contador.priorityQueue;
+    while(!copia.priorityQueue.empty()){//basicamente aplica a função anterior em todos os elementos
+        copia.priorityQueue.top()->codigo=fazercodigo(copia.priorityQueue.top()->caractere,ArvoreDeHuffman,"");
+        copia.priorityQueue.pop();
     }
 }
