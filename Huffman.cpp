@@ -9,8 +9,24 @@ std::string hf::PALAVRAS_CHAVE_CPP[NUM_PALAVRAS_CHAVE] = {      //array constant
 };
 
 std::vector<std::string> palavrasChaveEncontradas;          //vetor que guarda cada palavra chave que encontrar para evitar contar os caracteres dela.
-
-
+int Huffman::pertencenasubstring(std::vector<Huffman::substring> &substrings, size_t &i){
+    for(substring alvo :substrings){
+        if(alvo.pos == i){
+            return alvo.palavraint;
+        }
+    }
+    return -1;
+}
+std::vector<Huffman::substring> Huffman::caçarsubstrings(std::string &alvo){
+    std::vector<Huffman::substring> substrings_encontradas;
+    for(size_t i=NUM_CARACTERES_ASCII;i < NUM_CARACTERES_ASCII+NUM_PALAVRAS_CHAVE; i++){
+        if(alvo.find(nos[i]->caractere) !=std::string::npos){
+            auto encontrada= new Huffman::substring(alvo.find(nos[i]->caractere),i);
+            substrings_encontradas.push_back(*encontrada);
+        }
+    }
+    return substrings_encontradas;
+}
 void Huffman::encherArrayDeCaracteres(){
 
     for(size_t i{0}; i < NUM_CARACTERES_ASCII; i++){
@@ -97,8 +113,36 @@ void Huffman::montarTabela() {
         }
     }
 }
-
-
+void Huffman::criarArquivoTabela(){
+    std::ofstream arquivo("tabela.txt");
+    for(size_t i=0;i<NUM_CARACTERES_ASCII+NUM_PALAVRAS_CHAVE;i++){
+        if(nos[i]->freq>0){
+            arquivo<<i<<" "<<nos[i]->freq<<" ";
+        }
+    }
+    arquivo.close();
+}
+void Huffman::lerArquivoTabela(){
+    arquivoDeEntrada.open(nomeDaSaida, std::fstream::in);
+    std::string palavra;
+    size_t i=0;
+    bool index =true;
+    while (arquivoDeEntrada >> palavra) { 
+        if(index){
+            i=std::stoi(palavra);
+            index=false;
+        }
+        else{
+            nos[i]->freq=std::stoi(palavra);
+            index=true;
+        }
+    }
+    for (size_t i = 0; i < NUM_CARACTERES_ASCII + NUM_PALAVRAS_CHAVE; ++i) {
+        if (nos[i]->freq > 0) {         //apenas coloca cada nó (após contagem da frequencia) na priority_queue
+            contador.priorityQueue.push(nos[i]);
+        }
+    }
+}
 void Huffman::printTabela(){            //apenas para teste: printa todos os nós com suas respectivas frequencias.
     while(!contador.priorityQueue.empty()){
         no::No* no = contador.priorityQueue.top();
@@ -147,4 +191,31 @@ void Huffman::codificar(){//cria o código de todos
         copia.priorityQueue.top()->codigo=fazercodigo(copia.priorityQueue.top()->caractere,ArvoreDeHuffman,"");
         copia.priorityQueue.pop();
     }
+}
+void Huffman::compactar(){
+    std::ifstream arquivol(nomeDaEntrada);
+    std::ofstream arquivow("algo.txt");
+    std::string linha;
+    while (std::getline(arquivol, linha)){
+        auto substrings=caçarsubstrings(linha);
+        for(size_t i=0;i<linha.size();i++){
+            int teste=pertencenasubstring(substrings,i);
+            if(teste >= 0){
+                arquivow << nos[teste]->codigo;
+                std::cout<<teste;
+                i+=nos[teste]->caractere.size()-1;
+            }
+            else{
+                unsigned char ch = linha[i];
+                if (nos[ch]) {
+                    arquivow << nos[ch]->codigo;
+                } else {
+                    std::cerr << "Caracter inválido ou não encontrado";
+                }
+            }
+        }
+        arquivow<<"\n";
+    }
+    arquivow.close();
+    arquivol.close();
 }

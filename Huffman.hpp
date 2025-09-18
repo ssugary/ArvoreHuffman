@@ -19,7 +19,16 @@ namespace hf {
 
 
     class Huffman {
-
+        struct substring{
+        size_t pos;
+        size_t palavraint;
+        substring(size_t pos, size_t palavraint){
+            this->pos=pos;
+            this->palavraint=palavraint;
+        }
+        };
+        int pertencenasubstring(std::vector<substring> &,size_t &);
+        std::vector<substring> caçarsubstrings(std::string&);
         no::No* nos[NUM_CARACTERES_ASCII + NUM_PALAVRAS_CHAVE]; //array de todos os nós e possiveis caracteres + possiveis palavras chave
         cf::ContadorDeFrequencia contador;  //priority_queue para organizar os nós.
         no::No* ArvoreDeHuffman;
@@ -34,12 +43,14 @@ namespace hf {
         ~Huffman();                         // destrutor da classe
         void lerPalavrasChave();            // função que pega as palavras chave do arquivo de leitura
         void montarTabela();                //função que pega os caracteres + palavras chave do arquivo de leitura e joga na priority_queue
-
+        void criarArquivoTabela();
+        void lerArquivoTabela();
         void printTabela();                 //apenas para testes: printa todos os nós em ordem de prioridade
         no::No* montarArvore();
         int mostrarArvore(no::No* nodo);
         std::string fazercodigo(std::string alvo, no::No* busca,std::string codigo);
         void codificar();
+        void compactar();
     };
 
 
