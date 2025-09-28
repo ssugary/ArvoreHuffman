@@ -199,7 +199,7 @@ void Huffman::compactar(){
                 i+=nos[teste]->caractere.size()-1;
             }
             else{
-                unsigned char ch = linha[i];
+                char ch = linha[i];
                 if (nos[ch]) {
                     arquivow << nos[ch]->codigo;
                 } else {
