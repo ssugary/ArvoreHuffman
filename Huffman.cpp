@@ -52,7 +52,11 @@ Huffman::Huffman(std::string entrada, std::string saida) { //construtor padrão
     encherArrayDeCaracteres();
     encherArrayDePalavras();
 }
-
+Huffman::Huffman(std::string entrada) { //construtor padrão
+    nomeDaEntrada = entrada;
+    encherArrayDeCaracteres();
+    encherArrayDePalavras();
+}
 Huffman::~Huffman(){                                       //destrutor padrão
     for(size_t i{0}; i < NUM_CARACTERES_ASCII; i++){
         delete nos[i];
@@ -81,37 +85,27 @@ void Huffman::lerPalavrasChave() {          //leitor de palavras chave
 
 
 void Huffman::montarTabela() {
-    lerPalavrasChave();         //primeiro lê as palavras chave para evitar contagem repetida
-
-    arquivoDeEntrada.open(nomeDaEntrada, std::fstream::in);
-    std::string palavra;
-
-    while (arquivoDeEntrada >> palavra) {   //lê palavra por palavra do arquivo
-        bool ignorar = false;
-        for (const std::string& p : palavrasChaveEncontradas) {
-            if (p == palavra) {             //caso a palavra esteja no array de palavras chave, iremos pular ela.
-                ignorar = true;
-                break;
+    std::ifstream arquivo(nomeDaEntrada);
+    std::string linha;
+    while(std::getline(arquivo,linha)){
+         auto substrings=caçarsubstrings(linha);
+        for(size_t i=0;i<linha.size();i++){
+            int teste=pertencenasubstring(substrings,i);
+            if(teste >= 0){
+                nos[teste]->freq++;
+                i+=nos[teste]->caractere.size()-1;
             }
-        }
-
-        if (ignorar) continue;
-
-        for (char c : palavra) {        //caso ela passe, então lemos todos os caracteres dela e aumentamos a sua frequência
-            unsigned char id = static_cast<unsigned char>(c);
-            if (id < NUM_CARACTERES_ASCII) {
-                nos[id]->freq++;
+            else{
+                unsigned char ch = linha[i];
+                if (nos[ch]) {
+                    nos[ch]->freq++;
+                } else {
+                    //std::cerr << "Caracter inválido ou não encontrado";
+                }
             }
         }
     }
-
-    arquivoDeEntrada.close();
-
-    for (size_t i = 0; i < NUM_CARACTERES_ASCII + NUM_PALAVRAS_CHAVE; ++i) {
-        if (nos[i]->freq > 0) {         //apenas coloca cada nó (após contagem da frequencia) na priority_queue
-            contador.priorityQueue.push(nos[i]);
-        }
-    }
+    arquivo.close();
 }
 void Huffman::criarArquivoTabela(){
     std::ofstream arquivo("tabela.txt");
@@ -194,7 +188,7 @@ void Huffman::codificar(){//cria o código de todos
 }
 void Huffman::compactar(){
     std::ifstream arquivol(nomeDaEntrada);
-    std::ofstream arquivow("algo.txt");
+    std::ofstream arquivow("algo.bin");
     std::string linha;
     while (std::getline(arquivol, linha)){
         auto substrings=caçarsubstrings(linha);
@@ -202,7 +196,6 @@ void Huffman::compactar(){
             int teste=pertencenasubstring(substrings,i);
             if(teste >= 0){
                 arquivow << nos[teste]->codigo;
-                std::cout<<teste;
                 i+=nos[teste]->caractere.size()-1;
             }
             else{
@@ -210,7 +203,7 @@ void Huffman::compactar(){
                 if (nos[ch]) {
                     arquivow << nos[ch]->codigo;
                 } else {
-                    std::cerr << "Caracter inválido ou não encontrado";
+                    //std::cerr << "Caracter inválido ou não encontrado";
                 }
             }
         }

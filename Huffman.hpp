@@ -40,6 +40,7 @@ namespace hf {
         public:
     
         Huffman(std::string, std::string); //construtor da classe
+        Huffman(std::string); //construtor da classe
         ~Huffman();                         // destrutor da classe
         void lerPalavrasChave();            // função que pega as palavras chave do arquivo de leitura
         void montarTabela();                //função que pega os caracteres + palavras chave do arquivo de leitura e joga na priority_queue
