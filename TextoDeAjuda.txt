@@ -1,0 +1,64 @@
+Olá! :)
+Esse programa implementa a lógica do Algoritmo de Huffman, mas com algumas coisas a mais:
+
+    - Ao invés de se limitar apenas com caracteres, também analisamos a frequência de palavras-chave da linguagem C++!
+    - Separamos o código em 2 partes: Criador da tabela & Compressor/Descompressor.
+
+Agora, segue o guia de como rodar o programa para cada função:
+
+0) Antes de iniciar, aqui temos a lista de comandos:
+
+    // comando de ajuda, após usar, o programa imediatamente retorna essa tela!
+    $ -h
+
+    // comando exclusivo do Compressor. Utilize para comprimir um arquivo de texto.
+    $ comprimir <Arquivo_A_Ser_Comprimido> <Tabela_Do_Arquivo_Comprimido> 
+
+    // comando exclusivo do Compressor. Utilize para descomprimir um arquivo comprimido.
+    $ descomprimir <Arquivo_Comprimido> <Tabela_de_Compressão>
+
+
+1) Compilar o código:
+
+Para compilar o código, recomendamos utilizar o próprio g++, abaixo temos alguns exemplos:
+
+    // Comando para compilar o Criador da tabela:
+
+    $ c++ criartabela.cpp Huffman.cpp interface.cpp -o criarTabela
+
+
+    // Comando para compilar o Compressor/Descompressor:
+
+    $ c++ compressor.cpp Huffman.cpp interface.cpp -o comprimir
+
+
+2.1) Rodar o Criador da tabela:
+
+Para rodar esse código, compile o criador de tabela (seguindo o passo 1), depois, utilize o seguinte comando:
+
+    $ ./criarTabela <caminho_do_arquivo_a_ser_lido>
+
+Após isso, o código irá gerar um arquivo "tabela.txt", onde o conteúdo será apenas uma linha contendo o código do
+caractere + sua frequência.
+
+2.2) Rodar o Compressor:
+
+Para rodar esse código, compile o compressor (seguindo o passo 1), depois, utilize o seguinte comando:
+
+    $ ./comprimir comprimir <Arquivo_a_ser_comprimido> <Tabela_do_arquivo_comprimido>
+
+Esse comando irá retornar uma lista de 3-uplas com o formato (caractere, frequência, códigoHuffman), além de gerar um
+arquivo .bin com o arquivo comprimido.
+
+2.3) Rodar o Descompressor:
+
+Para rodar esse código, compile o compressor (seguindo o passo 1), depois, utilize o seguinte comando:
+
+    $ ./comprimir descomprimir <Arquivo_comprimido> <Tabela_de_Compressão>
+
+Esse comando irá gerar um arquivo .txt com o arquivo descomprimido.
+
+3) Fim :)
+
+Agora que você leu o guia para esse programa, boa utilização!!
+

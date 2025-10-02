@@ -3,7 +3,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <unordered_set>
 #include <vector>
 
 #include "ContadorDeFrequencia.hpp"
@@ -32,7 +31,7 @@ namespace hf {
         no::No* nos[NUM_CARACTERES_ASCII + NUM_PALAVRAS_CHAVE]; //array de todos os nós e possiveis caracteres + possiveis palavras chave
         cf::ContadorDeFrequencia contador;  //priority_queue para organizar os nós.
         no::No* ArvoreDeHuffman;
-        std::fstream arquivoDeEntrada, arquivoDeSaida; //arquivo de saida está inutilizavel ainda, mas o de entrada é o que a gente vai ler
+        std::fstream arquivoDeEntrada; //arquivo de saida está inutilizavel ainda, mas o de entrada é o que a gente vai ler
         std::string nomeDaEntrada; //nome do arquivo de entrada
         std::string nomeDaEntrada2; //nome do arquivo de saída
         void encherArrayDeCaracteres(); // "construtores" do array de nós
