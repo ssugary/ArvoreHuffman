@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <string>
+#include <vector>
 
 namespace no {      
 
@@ -10,8 +11,8 @@ namespace no {
         
         std::string caractere;      //caractere a ser contade
         size_t freq;                //frequencia do caractere
-        std::string codigo;         //código gerado do caractere
-
+        //std::string codigo;         //código gerado do caractere
+        std::vector<bool> codigo;
         No* filhoEsq;       //como ela é binária, tem os dois filhos
         No* filhoDir;
         
@@ -37,6 +38,8 @@ namespace no {
             delete filhoDir;
             delete filhoEsq;
         }
+
+    
     };
 
 };
