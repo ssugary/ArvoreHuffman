@@ -13,9 +13,13 @@ std::string removerAcentos(const std::string& str) {
     return sem_acentos;
 }
 
-std::string hf::PALAVRAS_CHAVE_CPP[NUM_PALAVRAS_CHAVE] = {      //array constante das palavras chave de c++
+std::string hf::PALAVRAS_CHAVE_CPP[NUM_PALAVRAS_CHAVE] = {      
     "for", "return", "include", "std", "if", "else", "switch",
-    "case", "int", "float", "string", "char", "while", "bool"
+    "case", "int", "float", "string", "char", "while", "bool",
+    "ç","á","à","ã","â","ä","è","é","ê","ẽ","ë","í",
+    "ì","ĩ","ó","ò","õ","ô","ö","ú","ù","ũ","û","ü",
+    "À","Á","Ã","Â","Ä","É","È","Ẽ","Ê","Ë","Í","Ì",
+    "Ï","Ó","Ò","Õ","Ô","Ö","Ú","Ù","Û","Ũ","Ü"
 };
 
 std::vector<std::string> palavrasChaveEncontradas;          //vetor que guarda cada palavra chave que encontrar para evitar contar os caracteres dela.
@@ -84,6 +88,7 @@ void Huffman::encherArrayDePalavras() {                                 //apenas
     for (size_t i = 0; i < NUM_PALAVRAS_CHAVE; ++i) {
         nos[NUM_CARACTERES_ASCII + i] = new no::No(PALAVRAS_CHAVE_CPP[i], 0);
     }
+    nos[NUM_CARACTERES_ASCII+NUM_PALAVRAS_CHAVE]=new no::No("eof",1);
 }
 
 
@@ -95,11 +100,11 @@ Huffman::Huffman(std::string entrada, std::string entrada2) { //construtor padr�
     encherArrayDePalavras();
 }
 
-Huffman::Huffman(std::string entrada) { //construtor padrão
+/*Huffman::Huffman(std::string entrada) { //construtor padrão
     nomeDaEntrada = entrada;
     encherArrayDeCaracteres();
     encherArrayDePalavras();
-}
+}*/
 
 Huffman::~Huffman(){                                       //destrutor padrão
     for(size_t i{0}; i < NUM_CARACTERES_ASCII; i++){
@@ -120,7 +125,7 @@ Huffman::~Huffman(){                                       //destrutor padrão
 
 
 
-void Huffman::montarTabela() {
+/*void Huffman::montarTabela() {
     std::ifstream arquivo(nomeDaEntrada);
     std::string linha;
     size_t poslinha=0;
@@ -157,6 +162,7 @@ void Huffman::criarArquivoTabela(){
     }
     arquivo.close();
 }
+*/
 void Huffman::lerArquivoTabela(){
     arquivoDeEntrada.open(nomeDaEntrada2, std::fstream::in);
     std::string palavra;
@@ -177,6 +183,72 @@ void Huffman::lerArquivoTabela(){
             contador.priorityQueue.push(nos[i]);
         }
     }
+}
+void Huffman::lerArquivoTabelaBin(){
+    enum Vendo{
+        tamanho,
+        atual,
+        freq,
+        salto,
+    };
+    std::ifstream ifs(nomeDaEntrada2, std::ios::binary);
+    size_t pos=0;
+    size_t saltopos=0;
+    size_t tamanhofeq=0;
+    Vendo vendo=tamanho;
+    std::list<bool>lido;
+    std::list<bool>atualbin;
+    unsigned char byte;
+    while(ifs.read(reinterpret_cast<char*>(&byte), 1)){
+        for(int i = 7; i >= 0; i--){
+            bool bit = (byte >> i) & 1;
+            lido.push_back(bit);
+            if( i == 0 ){
+                switch(vendo){
+                    case tamanho:
+                        for (bool bitt : lido) {
+                            tamanhofeq = (tamanhofeq << 1) | bitt;
+                        }
+                        vendo=atual;
+                        lido.clear();
+                        break;
+                    case atual:
+                        for (bool bitt : lido) {
+                            pos = (pos << 1) | bitt;
+                        }
+                        vendo=freq;
+                        lido.clear();
+                        break;
+                    case freq:
+                        if(lido.size()>=tamanhofeq){
+                            for (bool bitt : lido) {
+                                nos[pos]->freq = (nos[pos]->freq  << 1) | bitt;
+                            }
+                            saltopos=0;
+                            vendo=salto;
+                            lido.clear();
+                        }
+                        break;
+                    case salto:
+                        for (bool bitt : lido) {
+                                saltopos = (saltopos << 1) | bitt;
+                        }
+                        pos+=saltopos;
+                        vendo=freq;
+                        lido.clear();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+    for (size_t i = 0; i < NUM_CARACTERES_ASCII + NUM_PALAVRAS_CHAVE+1; ++i) {
+        if (nos[i]->freq > 0) {         //apenas coloca cada nó na priority_queueapós contagem da frequencia
+            contador.priorityQueue.push(nos[i]);
+        }
+    }
+    ifs.close();
 }
 no::No* Huffman::montarArvore(){ //com base na frequência monta a arvore
     cf::ContadorDeFrequencia copia; //cria uma cópia a fim de preserva a lista original
@@ -227,7 +299,7 @@ int Huffman::mostrarArvore(no::No* nodo){//mostra a arvore mas toda feia =(
 // }
 void Huffman::printTabela() {
     nos[10]->caractere = "\\n";
-    for (size_t i = 0; i < NUM_PALAVRAS_CHAVE + NUM_CARACTERES_ASCII; i++) {
+    for (size_t i = 0; i < NUM_PALAVRAS_CHAVE + NUM_CARACTERES_ASCII+1; i++) {
         if (!nos[i]->codigo.empty()) {
             std::cout << "( " << nos[i]->caractere << ", "
                       << nos[i]->freq << ", ";
@@ -263,7 +335,7 @@ void Huffman::printTabela() {
 //         copia.priorityQueue.pop();
 //     }
 // }
-            //mesma coisa da ultima, só que agora é O(n) ao invés de O(n²). 
+            //mesma coisa da ultima, só que agora é O(n) ao invés de O(n). 
 void Huffman::fazerCodigo(no::No* no, std::vector<bool>& codigo){
     if (!no) return;
     if (!no->filhoEsq && !no->filhoDir) {
@@ -347,7 +419,7 @@ void Huffman::compactar() {
     };
 
     while (std::getline(arquivol, linha)) {
-        linha = removerAcentos(linha);
+        //linha = removerAcentos(linha);
         auto substrings = cacarMapaSubstrings(linha);
 
         for (size_t i = 0; i < linha.size(); i++) {
@@ -374,7 +446,9 @@ void Huffman::compactar() {
             escrever_bit(bit);
         }
     }
-
+    for (bool bit : nos[NUM_CARACTERES_ASCII+NUM_PALAVRAS_CHAVE]->codigo) {
+        escrever_bit(bit);
+    }
     // Escreve o último byte, se houver bits restantes
     if (count > 0) {
         byte <<= (8 - count); // preenche com zeros à direita
@@ -443,6 +517,11 @@ void Huffman::descompactar(){
                 if(aux->caractere == "\\n"){
                     ofs << "\n";
                 }
+                else if(aux->caractere =="eof"){
+                    ifs.close();
+                    ofs.close();
+                    return;
+                }
                 else{
                     ofs << aux->caractere;
                 }
@@ -452,8 +531,6 @@ void Huffman::descompactar(){
 
         }
     }
-    
-    
     ifs.close();
     ofs.close();
 

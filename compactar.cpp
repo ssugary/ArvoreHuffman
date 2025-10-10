@@ -24,15 +24,18 @@ int main(int argc, char* argv[]){
             inter.textoDeAjuda();
         break;
         case 1:
-            huff.lerArquivoTabela();
+            //huff.lerArquivoTabela();
+            huff.lerArquivoTabelaBin();
             huff.montarArvore();
             huff.codificar();
             huff.printTabela();
             huff.compactar();
         break;
         case 2:
-            huff.lerArquivoTabela();
+            //huff.lerArquivoTabela();
+            huff.lerArquivoTabelaBin();
             huff.montarArvore();
+            //huff.printTabela();
             huff.descompactar();
 
         break;
