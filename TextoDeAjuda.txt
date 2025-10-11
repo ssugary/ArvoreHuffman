@@ -24,7 +24,7 @@ Para compilar o código, recomendamos utilizar o próprio g++, abaixo temos algu
 
     // Comando para compilar o Criador da tabela:
 
-    $ c++ criartabela.cpp Huffman.cpp interface.cpp -o criarTabela
+    $ c++ criartabela.cpp Tabela.cpp -o criartabela
 
 
     // Comando para compilar o Compressor/Descompressor:
