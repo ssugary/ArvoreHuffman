@@ -59,6 +59,7 @@ namespace hf {
         void codificar();
         void compactar();
         void cacarNSubstrings(std::string &substring, size_t n, std::vector<Huffman::substring> &substrings_encontradas);
+        void verExtensao(std::string &extensao);
         void descompactar();
     };
 

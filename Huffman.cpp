@@ -397,7 +397,32 @@ void Huffman::codificar() {
 // }
 void Huffman::compactar() {
     std::ifstream arquivol(nomeDaEntrada);
-    std::ofstream arquivow("algo.bin", std::ios::binary);
+    
+    auto retirar_extensao= [](std::string &nomeDaEntrada){
+        auto numbin=[](int alvo){
+            std::list<bool> bin;
+            if(alvo==0){
+                bin.push_front(0);
+            }
+            while(alvo>0){
+                bin.push_front(alvo%2);
+                alvo /=2;
+            }
+            for(size_t i=bin.size();i<8;i++){
+                bin.push_front(0);
+            }
+            return bin;
+        };
+        std::list<std::list<bool>>extensao;
+        while(nomeDaEntrada.back()!='.'){
+            extensao.push_front(numbin((int)nomeDaEntrada.back()));
+            nomeDaEntrada.pop_back();
+        }
+        extensao.push_front(numbin((extensao.size())));
+        return extensao;
+    };
+    auto extensao=retirar_extensao(nomeDaEntrada);
+    std::ofstream arquivow(nomeDaEntrada + "bin", std::ios::binary);
     std::string linha;
 
     std::vector<bool> codigo_quebra_linha;
@@ -417,7 +442,11 @@ void Huffman::compactar() {
             count = 0;
         }
     };
-
+    for(std::list<bool> caracterascii: extensao){
+        for(bool bit: caracterascii){
+            escrever_bit(bit);
+        }
+    }
     while (std::getline(arquivol, linha)) {
         //linha = removerAcentos(linha);
         auto substrings = cacarMapaSubstrings(linha);
@@ -492,48 +521,87 @@ void Huffman::compactar() {
 
 
 // }
-
-void Huffman::descompactar(){
+void Huffman::verExtensao(std::string &extensao){
     std::ifstream ifs(nomeDaEntrada, std::ios::binary);
-    std::ofstream ofs("original.txt");
+    size_t tamanhoext=0;
+    bool vendotamanhoext=true;
+    unsigned char byte;
+    while(ifs.read(reinterpret_cast<char*>(&byte), 1)){
+        if(vendotamanhoext){
+            for(int i = 7; i >= 0; i--){
+                bool bit = (byte >> i) & 1;
+                tamanhoext= (tamanhoext<< 1) | bit;
+            }
+            vendotamanhoext=false;
+        }
+        else if(tamanhoext>0){
+            size_t temp;
+            for(int i = 7; i >= 0; i--){
+                bool bit = (byte >> i) & 1;
+                temp= (temp<< 1) | bit;
+            }
+            extensao.push_back((char)temp);
+            tamanhoext--;
+        }
+        else{
+            ifs.close();
+        }
+    }
+    ifs.close();
+}
+void Huffman::descompactar(){
+    std::string extensao;
+    verExtensao(extensao);
+    size_t tempextensao=extensao.size()+1;
+    std::ifstream ifs(nomeDaEntrada, std::ios::binary);
+    nomeDaEntrada.pop_back();
+    nomeDaEntrada.pop_back();
+    nomeDaEntrada.pop_back();
+    nomeDaEntrada.pop_back();
+    std::ofstream ofs(nomeDaEntrada+"(1)."+extensao);
     
     no::No *aux = ArvoreDeHuffman;
 
     unsigned char byte;
     
     while(ifs.read(reinterpret_cast<char*>(&byte), 1)){
-        for(int i = 7; i >= 0; i--){
-            bool bit = (byte >> i) & 1;
-            
-            if(bit == 0){
-                aux = aux->filhoEsq;
-            }
-            else{
-                aux = aux->filhoDir;
-            }
-
-
-            if(!aux->filhoDir && !aux->filhoEsq){
-                if(aux->caractere == "\\n"){
-                    ofs << "\n";
-                }
-                else if(aux->caractere =="eof"){
-                    ifs.close();
-                    ofs.close();
-                    return;
+        if(tempextensao > 0){
+            tempextensao--;
+            continue;
+        }
+        else{
+            for(int i = 7; i >= 0; i--){
+                bool bit = (byte >> i) & 1;
+                
+                if(bit == 0){
+                    aux = aux->filhoEsq;
                 }
                 else{
-                    ofs << aux->caractere;
+                    aux = aux->filhoDir;
                 }
-            
-                aux = ArvoreDeHuffman;
-            }
 
+
+                if(!aux->filhoDir && !aux->filhoEsq){
+                    if(aux->caractere == "\\n"){
+                        ofs << "\n";
+                    }
+                    else if(aux->caractere =="eof"){
+                        ifs.close();
+                        ofs.close();
+                        return;
+                    }
+                    else{
+                        ofs << aux->caractere;
+                    }
+                
+                    aux = ArvoreDeHuffman;
+                }
+
+            }
         }
     }
     ifs.close();
     ofs.close();
-
 
 }
 
