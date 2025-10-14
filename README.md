@@ -1,9 +1,9 @@
-# Projeto Password Generator
+# Projeto de Simulação do Algoritmo de Huffman
 
 <!--toc:start-->
 
 - [1. Introdução](#1-introdução)
-- [2. Funcionamento](#2-funcionamento)
+- [2. Funcionamento](#2-Inicialização-do-Programa)
   - [2.1 Considerações sobre o tamanho da senha](#21-considerações-sobre-o-tamanho-da-senha)
   - [2.2 Considerações sobre a escolha de vários caracteres de um mesmo grupo](#22-considerações-sobre-a-escolha-de-vários-caracteres-de-um-mesmo-grupo)
 - [3. Entrada e Interface](#3-entrada-e-interface)
@@ -20,17 +20,19 @@ O programa oferece uma interface no estilo CLI (Command Line Interface), e foi d
 
 Utilizamos as seguintes bibliotecas padrão da linguagem:
 
-    std::algorithm
-    std::cstddef
-    std::filesystem
-    std::fstream
-    std::iostream
-    std::list
-    std::map
-    std::queue
-    std::string
-    std::unordered_map
-    std::vector
+|    Bibliotecas        |
+|    ---------------    |
+|    std::algorithm     |
+|    std::cstddef       |
+|    std::filesystem    |
+|    std::fstream       |
+|    std::iostream      |
+|    std::list          |
+|    std::map           |
+|    std::queue         |
+|    std::string        |
+|    std::unordered_map |
+|    std::vector        |
 
 O nosso projeto tem como diferenciais as seguintes funções:
 
@@ -50,283 +52,263 @@ Também separamos nossos programas nas seguintes partes:
 | ContadorDeFrequencia.hpp | Arquivo de classe que cria uma fila de prioridade baseada na frequência de cada nó  |
 | TextoDeAjuda.txt         | Arquivo que mostra instruções de como cada programa funciona.                       |
 
-## 2. Funcionamento
+## 2. Inicialização do Programa
 
-O programa `passgen` recebe como entrada do usuário o tamanho da senha desejada junto com uma indicação de quais
-**grupos** de caracteres o gerador deve escolher.
-O gerador escolhe, pelo menos, um caractere de forma aleatória de cada grupo indicado.
+Antes de iniciar, aqui temos a lista de comandos:
 
-Os grupos de caracteres são os seguintes:
+    // comando exclusivo do Compressor. Utilize para comprimir um arquivo de texto.
+    $ comprimir <Arquivo_A_Ser_Comprimido> <Tabela_Do_Arquivo_Comprimido> 
 
-| Grupo                       | Elementos       |
-| --------------------------- | --------------- |
-| letras minúsculas (_lower_) | a-z             |
-| letras maiúsculas (_upper_) | A-Z             |
-| dígitos (_digits_)          | 0-9             |
-| _logograms_                 | # $ % & @ ^ ` ~ |
-| pontuação (_punctuation_)   | . , ; :         |
-| aspas (_quotes_)            | " '             |
-| barras (_slashes_)          | \ / \| \_ -     |
-| matemáticos (_math_)        | < > \* + ! ? =  |
-| parênteses (_braces_)       | } { ] [ ) (     |
-
-### 2.1 Considerações sobre o tamanho da senha
-
-O tamanho _default_ de uma senha é 7, caso o usuário não indique um tamanho manualmente.
-
-O programa deve procurar escolher, pelo menos, um caractere de cada grupo indicado.
-Em outras palavras, todos os grupos indicados pelo usuário **devem** contribuir com algum caractere para a senha final.
-
-Se o tamanho da senha solicitado for **maior** do que a quantidade de grupos indicados, o gerador deve escolher mais de
-um caractere por grupo.
-Por outro lado, se o tamanho da senha solicitado for **menor** do que a quantidade de grupos indicada, o tamanho da senha
-deverá ser alterado de maneira a escolher pelo menos um caractere de cada grupo.
-
-### 2.2 Considerações sobre a escolha de vários caracteres de um mesmo grupo
-
-Suponha que o programa precisa selecionar `n` caracteres de um grupo com, digamos, tamanho `m`, com `m>n`.
-Seu programa **deve** garantir que os `n` caracteres escolhidos sejam distintos.
-
-Por exemplo, se `n=3` e o grupo escolhido fosse o de "_parênteses_" (`--braces`), com tamanho `m=6`;
-uma seleção aceitável de caracteres deste grupo seria `{ [ ]`, enquanto que `{ { )` não seria aceitável visto que `{` aparece 2 vezes neste subconjunto.
-
-Por outro lado, se `n>m` é natural que ocorra repetições na seleção de caracteres deste grupo.
-Mas mesmo neste caso, procure reduzir ao máximo a quantidade de repetições.
-Considerando o exemplo anterior com `n=9`, um exemplo aceitável seria `) { ] ( [ { ( } [`, enquanto que `{ ) { { { { ] ) )` seria inaceitável, visto que o `{` é repetido múltiplas vezes (desnecessariamente).
-
-## 3. Entrada e Interface
-
-A seguir temos alguns exemplos de execução do `passgen` com algumas opções.
-
-```
-$ ./passgen --len 10 --lower --upper
-Welcome to passgen v 1.0, © DIMAp 2025
-
->>> The generated password is:
-LbgvcaQTPE
-```
-
-A execução acima gera uma senha de 10 caracteres, utilizando apenas letras minúsculas e maiúsculas.
-
-```
-$ ./passgen --len 20 --lower --upper --digits --logograms --punctuation --quotes --slashes --math --braces
-Welcome to passgen v 1.0, © DIMAp 2025
-
->>> The generated password is:
-\sv"!>`.C{0[1':(/L@?
-```
-
-A execução acima gera uma senha de 20 caracteres, misturando vários grupos de caracteres disponíveis.
-
-```
-$ ./passgen --len 15 --all-groups -t
-Welcome to passgen v 1.0, © DIMAp 2025
-
->>> The generated password is:
-?@.l&,|U/{+{"3'
-
->>> Password strength: Excellent
-```
-
-A execução anterior gera uma senha de 15 caracteres com todos os grupos presentes e exibe a qualidade da senha.
+    // comando exclusivo do Compressor. Utilize para descomprimir um arquivo comprimido.
+    $ descomprimir <Arquivo_Comprimido> <Tabela_de_Compressão>
 
 > [!tip]
-> A opção `-s` imprime na saída padrão uma classificação da qualidade da senha.
+> A opção `-h imprime na saída padrão uma tela de ajuda
 
-```
-$ ./passgen -h
-Welcome to passgen v 1.0, © DIMAp 2025
 
-This program generates passwords of specific length
-based on the selection of groups of characters.
+### 2.1 Compilar o código:
 
-Usage: passgen [<options>]
-  --len n        Size of the password (default is 7).
-  -l, --lower        Add letter in [a-z].
-  -u, --upper        Add letter in [A-Z].
-  -d, --digits       Add letter in [0-9].
-  -o, --logograms    Add letter in [#$%&@^`~].
-  -p, --punctuation  Add letter in [.,;:].
-  -q, --quotes       Add letter in ["'].
-  -s, --slashes      Add letter in [\/|_-].
-  -m, --math         Add letter in [*+!?=].
-  -b, --braces       Add letter in [{}[]()].
-  -a, --all-groups   Add letter from all the above groups.
-  -t, --strength     Show password strength classification.
-  -h, --help         Show this help screen.
-```
+Para compilar o código, recomendamos utilizar o próprio g++, abaixo temos alguns exemplos:
 
-Na execução acima o programa exibe a tela de ajuda, que também pode ser gerada com a opção `--help`
+    // Comando para compilar o Criador da tabela:
 
-> [!important]
-> Se o usuário não fornecer um grupo de caracteres o programa deve selecionar caracteres do grupo de letras minúsculas apenas.
+    $ c++ criartabela.cpp Tabela.cpp -o criartabela
 
-### 3.1 Qualidade da senha
 
-Você deve desenvolver uma forma própria de avaliar a qualidade da senha gerada, classificando-a
-em pelo menos 5 categorias.
-Segue abaixo uma possível sugestão de como classificar a senha:
+    // Comando para compilar o Compressor/Descompressor:
 
-- _Very Weak_: senhas extremamente fáceis, geralmente com 1 à 3 caracteres de comprimento.
-- _Weak_: senhas fáceis, com poucos caracteres (até 5), uso de apenas 1 grupo, uso de palavras do dicionário ou sequências bem conhecidas, etc.
-- _Medium_: senhas razoáveis, 5 ou mais caracteres com mais de 2-3 grupos selecionados; algumas repetições.
-- _Strong_: senhas fortes, 10 ou mais caracteres, sem repetição, 4 ou mais grupos selecionados.
-- _Very Strong_: senhas muito fortes, 15 ou mais caracteres, sem repetição, 6 ou mais grupos selecionados.
-- _Excellent_: senhas extremamente fortes, 25 ou mais caracteres, com poucas repetições, todos os grupos ativos.
+    $ c++ compressor.cpp Huffman.cpp interface.cpp -o comprimir
 
-Cada dupla está livre para modificar esta classificação da forma que achar mais adequado, desde que seja um critério razoável.
 
-> [!tip]
-> Faça uma investigação sobre o assunto para saber como classificar a qualidade de uma senha. Em particular, investigue a definição do conceito de **entropia** em senhas.
+### 2.2 Rodar o Criador da tabela:
 
-### 3.2 Tratamento de erros
+Para rodar esse código, compile o criador de tabela (seguindo o passo 1), depois, utilize o seguinte comando:
 
-Seu programa deve tratar erros de entrada do usuário, indicando uma mensagem indicativa do problema, seguido da tela de ajuda padrão.
+    $ ./criarTabela <caminho_do_arquivo_a_ser_lido>
 
-São exemplos (não exaustivos) de erros de entrada:
+Após isso, o código irá gerar um arquivo "tabela.bin", onde ela terá o conteúdo comprimido do arquivo fornecido.
 
-- Usar uma opção inválida.
-- Usar a opção `--len` mas esquecer de indicar um inteiro (argumento da opção).
-- Indicar um comprimento inválido, como por exemplo zero ou um número negativo.
-- Indicar quando o usuário usou o `-` mas não incluiu a letra correta.
+### 2.3 Rodar o Compressor:
 
-> [!important]
-> Seu programa deve receber os argumentos em qualquer ordem.
+Para rodar esse código, compile o compressor (seguindo o passo 1), depois, utilize o seguinte comando:
 
-## 4. Modelagem do problema
+    $ ./comprimir comprimir <Arquivo_a_ser_comprimido> <Tabela_do_arquivo_comprimido>
 
-Seguem algumas dicas e sugestões de modelagem do problema, bem como algumas boas práticas de programação.
+Esse comando irá retornar uma lista de 3-uplas com o formato (caractere, frequência, códigoHuffman), além de gerar um
+arquivo .bin com o arquivo comprimido.
 
-1. Crie um `struct` chamado de `RunningOptions` onde você deve salvar o resultado do processamento do [**argumentos de linha de comando**](https://www.learncpp.com/cpp-tutorial/command-line-arguments/) fornecidos ao programa.
-2. Implemente um conjunto de funções ou uma classe que simule o comportamento de um [dado aleatório de `n` faces](https://www.dados-online.pt/).
-   Tal componente pode ser muito útil, visto que selecionar elementos de um conjunto de caracteres pode ser interpretado como a rolagem de um dado aleatório com `n` faces, onde `n` é o número de componentes do conjunto.
-3. Ao coletar os caracteres de cada grupo, guarde-os em uma _string_ do tamanho da senha e, por fim, aplique a operação
-   _shuffle_ (embaralhamento) para garantir que os caracteres vindo de cada grupo serão misturados dentro da senha.
-4. Procure criar funções pequenas e simples, que desempenham apenas uma única tarefa.
-5. Use enumeração para representar os 9 grupos de caracteres. Isso torna seu código mais legível.
-6. A utilização da estrutura de dados **dicionário** (ex. _hash table_ ou _map_) pode facilitar alguns aspectos da implementação.
-7. Procure utilizar as funções da biblioteca [`<algoritm>`](https://en.cppreference.com/w/cpp/algorithm) do C++ sempre que possível.
+### 2.4 Rodar o Descompressor:
 
-## 5. Avaliação
+Para rodar esse código, compile o compressor (seguindo o passo 1), depois, utilize o seguinte comando:
 
-Seu programa deve ser escrito em um bom estilo de programação.
-Isto inclui (mas não fica limitado a) o uso de nomes significativos
-para identificadores e funções, um cabeçalho de comentário no início
-de cada arquivo, cabeçalho no formato Doxygen para cada função/método criado,
-uso apropriado de linhas em branco e identação para ajudar na visualização
-do código, comentários significativos nas linhas de código, etc.
+    $ ./comprimir descomprimir <Arquivo_comprimido> <Tabela_de_Compressão>
 
-<!-- Para a implementação deste projeto **é obrigatório** a utilização de pelo menos uma classe. -->
+Esse comando irá descomprimir o arquivo de acordo com a tabela de compressão fornecida.
 
-O programa completo deverá ser entregue sem erros de compilação, testado e totalmente
-documentado.
-O projeto é composto de **90 pontos** e será avaliado sob os seguintes critérios:-
 
-| Item                                             | Pontos |
-| ------------------------------------------------ | :----: |
-| Interface de acordo com o especificado           |   20   |
-| Seleciona caracteres dos grupos adequadamente    |   15   |
-| Apresenta a tela de ajuda quando solicitado      |   5    |
-| Trata os erros de entrada corretamente           |   12   |
-| Avalia a qualidade da senha com 5 categorias     |   10   |
-| Implementa os 9 grupos de caracteres solicitados |   18   |
-| Utiliza corretamente a aleatoriedade             |   10   |
+## 3. Explicação
 
-A pontuação acima não é definitiva e imutável.
-Ela serve apenas como um guia de como o trabalho será avaliado em linhas gerais.
-É possível a realização de ajustes nas pontuações indicadas visando adequar a pontuação
-ao nível de dificuldade dos itens solicitados.
+Neste tópico iremos descrever cada arquivo, com a complexidade de cada uma das funções que os compõem.
 
-Os itens abaixo correspondem à descontos, ou seja, pontos que podem ser retirados
-da pontuação total obtida com os itens anteriores:-
+### 3.1 ContadorDeFrequencia
 
-| Item                                                             | Value (points) |
-| ---------------------------------------------------------------- | :------------: |
-| Presença de erros de compilação                                  |    até -10     |
-| Falta de documentação das funções e/ou classes no estilo Doxygen |    até -10     |
-| Vazamento de memória                                             |      -10       |
-| Não preencher o arquivo [`author.md`](./author.md)               |      -10       |
-| O programa quebra ou falha durante a execução                    |       -5       |
+Esse arquivo cria a nossa fila de prioridade, mas, separamos em uma classe separada por questão de boas práticas
 
-O arquivo [`author.md`](docs/author.md) deve conter uma breve descrição do projeto e como compilar o projeto.
-Também deve descrever eventuais limitações do projeto e dificuldades de aprendizagem enfrentadas.
-Não esqueça de incluir os nomes dos componentes da dupla!
+Nela, apenas temos uma struct `CompararFrequencia` e uma fila de prioridade que irá comparar com base nessa struct.
 
-### 5.1 Extras
+#### 3.1.1 CompararFrequencia
 
-Os programas que **estiverem funcionando corretamente e completamente**, podem tentar obter ponto extra
-implementando alguns dos elementos adicionais sugeridos a seguir:
+Essa struct serve para falar o que devemos comparar dentro da fila de prioridade.
 
-1. Calcular a entropia das senhas geradas.
-2. Usar uma biblioteca externa para calcular qualidade da senha.
-3. Salvar em um arquivo criptografado informações como _local_ + _usuário_ + _senha_. Claro, é necessário pensar em uma maneira de recuperar as informações salvas.
-4. Utilizar classes na modelagem do seu programa.
-5. Criar um arquivo de configuração externa no formato [.ini](https://en.wikipedia.org/wiki/INI_file), de maneira a facilitar a configuração do gerador de senhas de forma persistente entre execuções.
+Nesse caso, iremos comparar as frequências.
 
-Se você tiver alguma outra ideia interessante de extensão do projeto, compartilhe no servidor Discord.
+### 3.2 No
 
-## 6. Boas práticas de programação
+Esse arquivo cria os nós da árvore binária que formará a Árvore de Huffman.
 
-Recomenda-se fortemente o uso das seguintes ferramentas:-
+#### 3.2.1 Variaveis
 
-- Doxygen: para a documentação de código e das classes;
-- Git: para o controle de versões e desenvolvimento colaborativo;
-- Valgrind: para verificação de vazamento de memória;
-- gdb: para depuração do código; e
-- CMake/Makefile: para gerenciar o processo de compilação do projeto.
+Cada nó tem as seguintes variáveis:
 
-## 7. Autoria e Política de Colaboração
+| Variável       | Função                                 |
+| -------------- | -------------------------------------- |
+| caractere      | Palavra/Caractere do nó                |
+| freq           | Frequência da palavra/caractere        |
+| codigo         | Código binário da palavra/caractere    |
+| filhoEsq       | Nó filho esquerdo do nó                |
+| filhoDir       | Nó filho direito do nó                 |
 
-O trabalho pode ser realizado **individualmente** ou em **dupla**,
-sendo que no último caso é importante, dentro do possível,
-dividir as tarefas igualmente entre os componentes.
-A divisão de tarefas deve ficar evidente através do histórico de _commit_ do
-repositório git correspondente.
 
-Após a entrega, qualquer equipe pode ser convocada para uma entrevista.
-O objetivo da entrevista é duplo: confirmar a autoria do trabalho e
-determinar a contribuição real de cada componente em relação ao trabalho.
-Durante a entrevista os membros da equipe devem ser capazes de explicar,
-com desenvoltura, qualquer trecho do trabalho, mesmo que o código tenha
-sido desenvolvido pelo outro membro da equipe.
-Portanto, é possível que, após a entrevista, ocorra redução da nota geral do trabalho ou
-ajustes nas notas individuais, de maneira a refletir a verdadeira contribuição
-de cada membro, conforme determinado na entrevista.
+#### 3.2.2 Construtores/Destrutores
 
-O trabalho em cooperação entre alunos da turma é estimulado.
-É aceitável a discussão de ideias e estratégias.
-Note, contudo, que esta interação **não** deve ser entendida como permissão
-para utilização de código ou parte de código de outras equipes,
-o que pode caracterizar a situação de plágio.
-Em resumo, tenha o cuidado de escrever seus próprios programas.
+Também temos os construtores e destrutores, onde todos tem complexidade 0(1).
 
-Trabalhos plagiados ou realizados com IA generativa (ou qualquer variação) receberão nota **zero** automaticamente,
-independente de quem seja o verdadeiro autor dos trabalhos infratores.
-Fazer uso de qualquer assistência sem reconhecer os créditos apropriados
-é considerado **plágio**.
-Quando submeter seu trabalho, forneça a citação e reconhecimentos necessários.
-Isso pode ser feito pontualmente nos comentários no início do código, ou,
-de maneira mais abrangente, no arquivo texto `autor.md`.
-Além disso, no caso de receber assistência, certifique-se de que ela lhe
-é dada de maneira genérica, ou seja, de forma que não envolva alguém ou um serviço
-tendo que escrever código por você.
+A seguir temos o uso de cada construtor:
 
-## 8. Entrega
+| Construtor     | Função                                 |
+| -------------- | -------------------------------------- |
+| (codigo, freq) | Criar uma folha do zero                |
+| (no*)          | Copiar um nó sem alterar o original    |
+| (no1* no2*)    | Criar um nó novo com os dois filhos    |
 
-Você deve submeter seu trabalho de duas formas:
-via GitHub Classroom (GHC) e via tarefa do SIGAA.
+### 3.3 Interface
 
-No SIGAA inclua apenas o link para o repositório no GHC.
-No GHC você deve _subir_ seu projeto até antes do prazo final da tarefa.
+Esse arquivo tem o objetivo de servir como uma interface visual para o programa de compressão/descompressão.
 
-Caso você opte por não usar o GHC por algum motivo, envie pelo SIGAA
-um arquivo compactado com todo código fonte completo do seu projeto.
+#### 3.3.1 Variáveis
 
-Em qualquer uma das duas opções descritas, lembre-se de remover todos
-os arquivo executáveis do seu projeto (a pasta `build`) antes
-de submeter seu trabalho.
+Temos as seguintes variáveis:    
 
-> [!important]
-> No caso de trabalhos implementados em duplas **os dois componente** devem
-> submeter o trabalho via SIGAA. O aluno que não enviar o trabalho pelo
-> SIGAA ficará sem nota!
+| Variável       | Função                                                                |
+| -------------- | --------------------------------------------------------------------- |
+| map            | mapa do tipo String x Boolean que mapeia uma palavra com um estado    |
+| entrada1       | String que guarda o nome da primeira entrada                          |
+| entrada2       | String que guarda o nome da segunda entrada                           |
+| ajuda          | Booleano que diz se o programa deve imprimir a tela de ajuda          |
+
+#### 3.3.2 Funções
+
+Temos os seguintes métodos com suas respectivas complexidades:
+
+| Método            | Função                                              | Complexidade |
+| ----------------- | --------------------------------------------------- | ------------ |
+| Construtor        | Inicializador padrão                                | Θ(1)         |
+| textoDeAjuda      | Imprime a mensagem de ajuda                         | Θ(1)         |
+| verify            | Verifica se as entradas são válidas                 | O(n * l) Ω(n)|
+| iniciar           | Retorna se o programa vai comprimir ou descomprimir | Θ(1)         |
+| verificarArquivos | Verifica se os arquivos são válidos                 | Θ(1)         |
+| getters           | Retorna o nome de cada entrada                      | Θ(1)         |
+
+
+Onde `n` é a quantidade de argumentos na entrada e `l` é o tamanho médio das strings.
+
+#### 3.3.3 Explicações das Complexidades
+
+O motivo da maioria ter complexidade Θ(1) é trivial (já que temos quantidades limitadas de iterações).
+
+Na função `Verify`, note que temos um loop `for`, onde cada iteração faz copias de strings com custo médio de Θ(l),
+como o loop faz `argc` iterações (chamaremos de `n`), então a complexidade terá O(n * l).
+
+Considerando que o melhor caso ocorre quando as entradas tem tamanho 1, então o melhor caso teria Ω(n).
+
+### 3.4 Tabela
+
+O arquivo implementa o algoritmo de criação da tabela de Huffman.
+
+#### 3.4.1 Constantes
+
+Definimos 3 constantes para facilitar a criação de nós, sendo elas:
+
+| Constantes                | Função                                              | 
+| ------------------------- | --------------------------------------------------- |
+| NUM_PALAVRAS_CHAVE        | Quantidade de palavras-chave definidas              |
+| NUM_CARACTERES_ASCII      | Quantidade de caracteres em ASCII                   |
+| PALAVRAS_CHAVE_CPP        | Array de strings que guardam todas as palavras-chave| 
+
+#### 3.4.2 Variáveis
+
+Definimos as seguintes variáveis:
+
+| Variáveis            | Função                                                          | 
+| -------------------- | --------------------------------------------------------------- |
+| nomeDaEntrada        | String que guarda o nome do arquivo que gerará a tabela         |
+| elementos            | Array que guarda todos os elementos que aparecem no arquivo     |
+
+Também temos a struct `elem`, onde ela guarda as informações de cada elemento (caractere/palavra e frequência).
+
+#### 3.4.3 Métodos
+
+
+| Método                  | Função                                                                      | Complexidade   |
+| ----------------------- | --------------------------------------------------------------------------- | -------------- |
+| Construtor              | Inicializa o nome da entrada e chama os métodos de preenchimento            | Θ(1)           |
+| Destrutor               | Libera a memória alocada para todos os elementos                            | Θ(1)           |
+| encherArrayDeCaracteres | Preenche o vetor de elementos com todos os caracteres ASCII                 | Θ(1)           |
+| encherArrayDePalavras   | Preenche o vetor de elementos com todas as palavras-chave                   | Θ(1)           |
+| montarTabela            | Lê o arquivo e contabiliza as frequências de cada caractere e palavra-chave | O(l * m * n)   |
+| printTabela             | Imprime todos os elementos com frequência > 0                               | Θ(1)           |
+| atualizar               | Substitui parte de uma string por ‘x’                                       | Θ(1)           |
+| cacarMapaSubstrings     | Procura substrings (palavras-chave) dentro de uma string                    | O(m)           |
+| pertenceNaSubstring     | Verifica se uma posição pertence a uma substring no mapa                    | Θ(1)           |
+| numbin                  | Converte um número inteiro em uma lista binária                             | Θ(log a)       |
+| criarArquivoTabelaBin   | Gera o arquivo binário de tabela de frequências                             | Θ(log f)       |
+| ImprimirArquivoBin      | Lê e imprime o conteúdo binário do arquivo                                  | Θ(b)           |
+
+Onde:
+    n = Tamanho médio de cada linha
+    m = Tamanho médio de cada palavra-chave
+    l = Número de linhas do arquivo
+    b = Tamanho do arquivo binário em bits
+    a = Valor do número passado
+
+#### 3.4.4 Explicação da Complexidade
+
+A maioria dos métodos possui complexidade Θ(1), pois realizam apenas operações simples, como inicializações, atribuições, liberações de memória ou percursos sobre estruturas de tamanho fixo (como o conjunto de caracteres ASCII e as palavras-chave definidas).
+
+As funções numbin e criarArquivoTabelaBin apresentam complexidade Θ(log n), já que estão sempre dividindo as iterações na metade.
+
+Os métodos pertenceNaSubstring e atualizar também são Θ(1), pois executam apenas verificações ou substituições diretas.
+
+O método montarTabela apresenta O(l × m × n), pois para cada uma das l linhas do arquivo é necessário percorrer n caracteres e verificar a ocorrência de até m palavras-chave.
+
+O método cacarMapaSubstrings tem complexidade O(m), refletindo a busca de todas as palavras-chave dentro de uma única string.
+
+O método ImprimirArquivoBin apresenta complexidade Θ(b), sendo diretamente proporcional ao número total de bits presentes no arquivo binário lido.
+
+### 3.5 Huffman
+
+#### 3.5.1 Constantes
+#### 3.5.2 Variaveis
+#### 3.5.3 Metodos
+
+| Método                  | Função                                                                   | Complexidade          |
+| ----------------------- | ------------------------------------------------------------------------ | --------------------- |
+| Construtor              | Inicializa o objeto Huffman, preenchendo arrays de caracteres e palavras | Θ(1)                  |
+| Destrutor               | Libera memória alocada para os nós                                       | Θ(1)                  |
+| encherArrayDeCaracteres | Cria os nós para os 256 caracteres ASCII                                 | Θ(1)                  |
+| encherArrayDePalavras   | Cria os nós para as palavras-chave                                       | Θ(1)                  |
+| cacarMapaSubstrings     | Localiza palavras-chave dentro de uma string                             | O(n * m) Ω(n)         |
+| pertenceNaSubstring     | Verifica se uma posição pertence a uma substring mapeada                 | Θ(1)                  |
+| lerArquivoTabelaBin     | Lê o arquivo binário da tabela de frequências                            | Θ(n)                  |
+| montarArvore            | Constrói a árvore de Huffman com base nas frequências                    | Θ(n log n)            |
+| mostrarArvore           | Percorre a árvore recursivamente e imprime                               | Θ(n)                  |
+| printTabela             | Imprime os códigos binários de cada caractere                            | Θ(1)                  |
+| fazerCodigo             | Gera os códigos binários recursivamente                                  | Θ(n * v)              |
+| codificar               | Chama `fazerCodigo` para toda a árvore                                   | Θ(n * v)              |
+| compactar               | Compacta o arquivo texto em binário usando a árvore                      | O(n · m) Ω(n)         |
+| verExtensao             | Lê a extensão original do arquivo compactado                             | Θ(1)                  |
+| descompactar            | Recria o arquivo original a partir do binário                            | Θ(n)                  |
+
+Onde:
+
+    n = tamanho do texto de entrada
+    m = tamanho médio das palavras-chave
+    v = tamanho médio dos códigos
+
+
+
+#### 3.5.4 Explicação da Complexidade
+A maioria dos métodos da classe apresenta complexidade Θ(1), incluindo o construtor, destrutor, e os métodos de inicialização dos vetores e leitura de extensão. Essas funções realizam apenas operações diretas e de tamanho fixo, como a criação de nós, leitura de pequenos trechos de dados e acesso via mapas.
+
+Os métodos `lerArquivoTabelaBin`, `mostrarArvore` e `descompactar` possuem complexidade Θ(n), pois percorrem sequencialmente todos os nós da árvore ou todos os bits de um arquivo, executando uma operação constante para cada elemento lido.
+
+A construção da árvore de Huffman (montarArvore) apresenta complexidade Θ(n log n), refletindo o uso de uma fila de prioridade (priority_queue) para combinar os nós em ordem crescente de frequência.
+
+As funções fazerCodigo e codificar possuem complexidade Θ(n · v), onde v representa a profundidade média da árvore. Isso ocorre porque cada nó precisa ser visitado e ter seu código binário gerado com base na travessia até a raiz.
+
+Os métodos cacarMapaSubstrings e compactar exibem comportamento O(n · m) no pior caso, já que para cada caractere (n) pode ser necessário comparar até m palavras-chave. No melhor caso, quando as buscas terminam rapidamente, a complexidade é Ω(n).
+
+
+### 3.6 Criartabela
+#### 3.6.1 Explicação da Complexidade
+
+Como para criar a tabela utilizamos as funções `montarTabela`, `criarArquivoTabelaBin` e `printTabela`, então a complexidade será apenas a soma delas, ou seja, O(l * n * m + log(f) + 1), ou, aproximadamente, Θ(l * n * m).
+
+### 3.7 Compactar
+#### 3.7.1 Explicação da Complexidade da compressão
+Como para comprimir utilizamos as funções `lerArquivoTabelaBin()`, `montarArvore()`, `printTabela`,`codificar` e `compactar` então a complexidade será apenas a soma delas, ou seja, O(n + n log n + 1 + n * v + n * m ), ou, aproximadamente, O(n * (log n + v + m)).
+
+#### 3.7.2 Explicação da Complexidade da descompressão
+Como para descomprimir utilizamos as funções `lerArquivoTabelaBin()`, `montarArvore()` e `descompactar`, então a complexidade será apenas a soma delas, ou seja, O(n + n log n + n), ou, aproximadamente O(n log n).
+
+
