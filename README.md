@@ -311,4 +311,27 @@ Como para comprimir utilizamos as funções `lerArquivoTabelaBin()`, `montarArvo
 #### 3.7.2 Explicação da Complexidade da descompressão
 Como para descomprimir utilizamos as funções `lerArquivoTabelaBin()`, `montarArvore()` e `descompactar`, então a complexidade será apenas a soma delas, ou seja, O(n + n log n + n), ou, aproximadamente O(n log n).
 
+### 3.8 Comparando com outros compactadores
+#### Nosso Compactador
+| Arquivo                     | Tamanho Original| Tamanho Comprimido |Taxa de Compressão |
+| --------------------------- | --------------- |--------------------|-------------------|
+| Huffman.cpp                 |      12,20 kb   |       7,00 kb      |      0.57         |
+| Tabela.cpp                  |      6,40  kb   |       4,10 kb      |      0.64         |
+| Interface.cpp               |      1,60  kb   |       1,03 kb      |      0.64         |
+| TextoDeAjuda.txt            |      2,30  kb   |       1,49 kb      |      0.64         |
 
+#### Formato .zip
+| Arquivo                     | Tamanho Original| Tamanho Comprimido |Taxa de Compressão |
+| --------------------------- | --------------- |--------------------|-------------------|
+| Huffman.cpp                 |      12,20 kb   |       3,50 kb      |      0.28         |
+| Tabela.cpp                  |      6,40  kb   |       2,10 kb      |      0.32         |
+| Interface.cpp               |      1,60  kb   |       0.74 kb      |      0.46         |
+| TextoDeAjuda.txt            |      2,30  kb   |       1,10 kb      |      0.47         |
+
+#### Formato .7zip
+| Arquivo                     | Tamanho Original| Tamanho Comprimido |Taxa de Compressão |
+| --------------------------- | --------------- |--------------------|-------------------|
+| Huffman.cpp                 |      12,20 kb   |       3,30 kb      |      0.27         |
+| Tabela.cpp                  |      6,40  kb   |       2,00 kb      |      0.31         |
+| Interface.cpp               |      1,60  kb   |       0,79 kb      |      0.49         |
+| TextoDeAjuda.txt            |      2,30  kb   |       1,10 kb      |      0.47         |
