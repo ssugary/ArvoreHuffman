@@ -1,3 +1,6 @@
+#ifndef INTERFACE
+#define INTERFACE
+
 #include <fstream>
 #include <iostream>
 #include <filesystem>
@@ -23,3 +26,5 @@ namespace itf {
 
 
 };
+
+#endif

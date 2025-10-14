@@ -16,6 +16,17 @@ Tabela::Tabela(std::string nomeDaEntrada){
     encherArrayDeCaracteres();
     encherArrayDePalavras();
 }
+Tabela::~Tabela() {
+    for(size_t i{0}; i < NUM_PALAVRAS_CHAVE + NUM_CARACTERES_ASCII; i++){
+        if(elementos[i]){
+
+        delete elementos[i];
+        elementos[i] = nullptr;
+
+        }
+    }
+}
+
 void Tabela::encherArrayDeCaracteres(){
 
     for(size_t i{0}; i < NUM_CARACTERES_ASCII; i++){

@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Huffman.hpp"
 #include "interface.hpp"
 
@@ -24,7 +23,6 @@ int main(int argc, char* argv[]){
             inter.textoDeAjuda();
         break;
         case 1:
-            //huff.lerArquivoTabela();
             huff.lerArquivoTabelaBin();
             huff.montarArvore();
             huff.codificar();
@@ -32,10 +30,8 @@ int main(int argc, char* argv[]){
             huff.compactar();
         break;
         case 2:
-            //huff.lerArquivoTabela();
             huff.lerArquivoTabelaBin();
             huff.montarArvore();
-            //huff.printTabela();
             huff.descompactar();
 
         break;

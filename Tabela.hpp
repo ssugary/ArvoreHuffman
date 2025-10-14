@@ -1,5 +1,6 @@
-#ifndef ARVORE_DE_HUFFMAN
-#define ARVORE_DE_HUFFMAN
+#ifndef TABELA_DA_HUFFMAN
+#define TABELA_DA_HUFFMAN
+
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -27,6 +28,7 @@ namespace tb {
         void encherArrayDePalavras();
         public:
         Tabela(std::string);
+        ~Tabela();
         void montarTabela();
         void printTabela();
         void criarArquivoTabela();
