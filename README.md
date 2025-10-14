@@ -3,14 +3,39 @@
 <!--toc:start-->
 
 - [1. Introdução](#1-introdução)
-- [2. Funcionamento](#2-Inicialização-do-Programa)
-  - [2.1 Considerações sobre o tamanho da senha](#21-considerações-sobre-o-tamanho-da-senha)
-  - [2.2 Considerações sobre a escolha de vários caracteres de um mesmo grupo](#22-considerações-sobre-a-escolha-de-vários-caracteres-de-um-mesmo-grupo)
-- [3. Entrada e Interface](#3-entrada-e-interface)
-  - [3.1 Qualidade da senha](#31-qualidade-da-senha)
-  - [3.2 Tratamento de erros](#32-tratamento-de-erros)
-- [4. Modelagem do problema](#4-modelagem-do-problema)  
+- [2. Inicialização do Programa](#2-inicialização-do-programa)
+  - [2.1 Compilar o código](#21-compilar-o-código)
+  - [2.2 Rodar o Criador da tabela](#22-rodar-o-criador-da-tabela)
+  - [2.3 Rodar o Compressor](#23-rodar-o-compressor)
+  - [2.4 Rodar o Descompressor](#24-rodar-o-descompressor)
+- [3. Explicação](#3-explicação)
+  - [3.1 Contador de Frequência](#31-contadordefrequencia)
+    - [3.1.1 CompararFrequencia](#311-compararfrequencia)
+  - [3.2 No](#32-no)
+    - [3.2.1 Variaveis](#321-variaveis)
+    - [3.2.2 Construtores e Destrutores](#322-construtoresdestrutores)
+  - [3.3 Interface](#33-interface)
+    - [3.3.1 Variáveis](#331-variáveis)
+    - [3.3.2 Funções](#332-funções)
+    - [3.3.3 Explicações das Complexidades](#333-explicações-das-complexidades)
+  - [3.4 Tabela](#34-tabela)
+    - [3.4.1 Constantes](#341-constantes)
+    - [3.4.2 Variáveis](#342-variáveis)
+    - [3.4.3 Métodos](#343-métodos)
+    - [3.4.4 Explicação da Complexidade](#344-explicação-da-complexidade)
+  - [3.5 Huffman](#35-huffman)
+    - [3.5.1 Constantes](#351-constantes)
+    - [3.5.2 Variáveis](#352-variáveis)
+    - [3.5.3 Métodos](#353-métodos)
+    - [3.5.4 Explicação da Complexidade](#354-explicação-da-complexidade)
+  - [3.6 Programas finais](#36-programas-finais)
+- [4. Comparando com outros compactadores](#4-comparando-com-outros-compactadores)
+  - [4.1 Nosso Compactador](#41-nosso-compactador)
+  - [4.2 Formato .zip](#42-formato-zip)
+  - [4.3 Formato .7zip](#43-formato-7zip)
+
 <!--toc:end-->
+
 
 ## 1. Introdução
 
@@ -128,7 +153,7 @@ Esse arquivo cria os nós da árvore binária que formará a Árvore de Huffman.
 
 #### 3.2.1 Variaveis
 
-Cada nó tem as seguintes variáveis:
+Cada nó possui seguintes variáveis:
 
 | Variável       | Função                                 |
 | -------------- | -------------------------------------- |
@@ -141,7 +166,7 @@ Cada nó tem as seguintes variáveis:
 
 #### 3.2.2 Construtores/Destrutores
 
-Também temos os construtores e destrutores, onde todos tem complexidade 0(1).
+Também temos os construtores e destrutores, onde todos possuem complexidade proporcional a 0(1).
 
 A seguir temos o uso de cada construtor:
 
@@ -153,7 +178,7 @@ A seguir temos o uso de cada construtor:
 
 ### 3.3 Interface
 
-Esse arquivo tem o objetivo de servir como uma interface visual para o programa de compressão/descompressão.
+Esse arquivo possui o objetivo de servir como uma interface visual para o programa de compressão/descompressão.
 
 #### 3.3.1 Variáveis
 
@@ -184,7 +209,7 @@ Onde `n` é a quantidade de argumentos na entrada e `l` é o tamanho médio das 
 
 #### 3.3.3 Explicações das Complexidades
 
-O motivo da maioria ter complexidade Θ(1) é trivial (já que temos quantidades limitadas de iterações).
+O motivo da maioria ter complexidade proporcional Θ(1) é trivial (já que temos quantidades limitadas de iterações).
 
 Na função `Verify`, note que temos um loop `for`, onde cada iteração faz copias de strings com custo médio de Θ(l),
 como o loop faz `argc` iterações (chamaremos de `n`), então a complexidade terá O(n * l).
@@ -249,16 +274,41 @@ As funções numbin e criarArquivoTabelaBin apresentam complexidade Θ(log n), j
 
 Os métodos pertenceNaSubstring e atualizar também são Θ(1), pois executam apenas verificações ou substituições diretas.
 
-O método montarTabela apresenta O(l × m × n), pois para cada uma das l linhas do arquivo é necessário percorrer n caracteres e verificar a ocorrência de até m palavras-chave.
+O método montarTabela apresenta O(l * m * n), pois para cada uma das l linhas do arquivo é necessário percorrer n caracteres e verificar a ocorrência de até m palavras-chave.
 
-O método cacarMapaSubstrings tem complexidade O(m), refletindo a busca de todas as palavras-chave dentro de uma única string.
+O método cacarMapaSubstrings possui complexidade proporcional a O(m), refletindo a busca de todas as palavras-chave dentro de uma única string.
 
 O método ImprimirArquivoBin apresenta complexidade Θ(b), sendo diretamente proporcional ao número total de bits presentes no arquivo binário lido.
 
 ### 3.5 Huffman
 
+Esse arquivo tem como objetivo implementar o algoritmo de compressão e descompressão de Huffman.
+
 #### 3.5.1 Constantes
+
+Definimos 3 constantes para facilitar a criação de nós, sendo elas:
+
+| Constantes                | Função                                              | 
+| ------------------------- | --------------------------------------------------- |
+| NUM_PALAVRAS_CHAVE        | Quantidade de palavras-chave definidas              |
+| NUM_CARACTERES_ASCII      | Quantidade de caracteres em ASCII                   |
+| PALAVRAS_CHAVE_CPP        | Array de strings que guardam todas as palavras-chave| 
+
 #### 3.5.2 Variaveis
+
+Definimos as seguintes variáveis:
+
+| Variáveis        | Função                                                                                  |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| nos              | Array que armazena ponteiros para todos os nós da árvore (caracteres e palavras-chave). |
+| contador         | Objeto da classe `ContadorDeFrequencia` responsável por armazenar e ordenar os nós.     |
+| ArvoreDeHuffman  | Ponteiro para o nó raiz da árvore de Huffman.                                           |
+| arquivoDeEntrada | Stream usada para leitura e manipulação de arquivos binários.                           |
+| nomeDaEntrada    | String que armazena o nome do arquivo de entrada a ser compactado ou descompactado.     |
+| nomeDaEntrada2   | String que armazena o nome do arquivo de tabela de frequências.                         |
+
+Temos também a classe estruturada `substring`, usada para mapear as posições de substrings dentro de uma string.
+
 #### 3.5.3 Metodos
 
 | Método                  | Função                                                                   | Complexidade          |
@@ -275,7 +325,7 @@ O método ImprimirArquivoBin apresenta complexidade Θ(b), sendo diretamente pro
 | printTabela             | Imprime os códigos binários de cada caractere                            | Θ(1)                  |
 | fazerCodigo             | Gera os códigos binários recursivamente                                  | Θ(n * v)              |
 | codificar               | Chama `fazerCodigo` para toda a árvore                                   | Θ(n * v)              |
-| compactar               | Compacta o arquivo texto em binário usando a árvore                      | O(n · m) Ω(n)         |
+| compactar               | Compacta o arquivo texto em binário usando a árvore                      | O(n * m) Ω(n)         |
 | verExtensao             | Lê a extensão original do arquivo compactado                             | Θ(1)                  |
 | descompactar            | Recria o arquivo original a partir do binário                            | Θ(n)                  |
 
@@ -294,25 +344,23 @@ Os métodos `lerArquivoTabelaBin`, `mostrarArvore` e `descompactar` possuem comp
 
 A construção da árvore de Huffman (montarArvore) apresenta complexidade Θ(n log n), refletindo o uso de uma fila de prioridade (priority_queue) para combinar os nós em ordem crescente de frequência.
 
-As funções fazerCodigo e codificar possuem complexidade Θ(n · v), onde v representa a profundidade média da árvore. Isso ocorre porque cada nó precisa ser visitado e ter seu código binário gerado com base na travessia até a raiz.
+As funções fazerCodigo e codificar possuem complexidade Θ(n * v), onde v representa a profundidade média da árvore. Isso ocorre porque cada nó precisa ser visitado e ter seu código binário gerado com base na travessia até a raiz.
 
-Os métodos cacarMapaSubstrings e compactar exibem comportamento O(n · m) no pior caso, já que para cada caractere (n) pode ser necessário comparar até m palavras-chave. No melhor caso, quando as buscas terminam rapidamente, a complexidade é Ω(n).
+Os métodos cacarMapaSubstrings e compactar exibem comportamento O(n * m) no pior caso, já que para cada caractere (n) pode ser necessário comparar até m palavras-chave. No melhor caso, quando as buscas terminam rapidamente, a complexidade é Ω(n).
 
 
-### 3.6 Criartabela
-#### 3.6.1 Explicação da Complexidade
+### 3.6 Programas finais
 
-Como para criar a tabela utilizamos as funções `montarTabela`, `criarArquivoTabelaBin` e `printTabela`, então a complexidade será apenas a soma delas, ou seja, O(l * n * m + log(f) + 1), ou, aproximadamente, Θ(l * n * m).
+No fim, a complexidade de cada operação do programa seriam as seguintes:
 
-### 3.7 Compactar
-#### 3.7.1 Explicação da Complexidade da compressão
-Como para comprimir utilizamos as funções `lerArquivoTabelaBin()`, `montarArvore()`, `printTabela`,`codificar` e `compactar` então a complexidade será apenas a soma delas, ou seja, O(n + n log n + 1 + n * v + n * m ), ou, aproximadamente, O(n * (log n + v + m)).
+| Operação          | Funções envolvidas                                              | Complexidade aproximada |
+| ----------------- | --------------------------------------------------------------- | ----------------------- |
+| Criação da tabela | `montarTabela`, `criarArquivoTabelaBin`, `printTabela`          | Θ(l * n * m)            |
+| Compressão        | `lerArquivoTabelaBin`, `montarArvore`, `codificar`, `compactar` | O(n * (log n + v + m))  |
+| Descompressão     | `lerArquivoTabelaBin`, `montarArvore`, `descompactar`           | O(n log n)              |
 
-#### 3.7.2 Explicação da Complexidade da descompressão
-Como para descomprimir utilizamos as funções `lerArquivoTabelaBin()`, `montarArvore()` e `descompactar`, então a complexidade será apenas a soma delas, ou seja, O(n + n log n + n), ou, aproximadamente O(n log n).
-
-### 3.8 Comparando com outros compactadores
-#### Nosso Compactador
+## 4 Comparando com outros compactadores
+### Nosso Compactador
 | Arquivo                     | Tamanho Original| Tamanho Comprimido |Taxa de Compressão |
 | --------------------------- | --------------- |--------------------|-------------------|
 | Huffman.cpp                 |      12,20 kb   |       7,00 kb      |      0.57         |
@@ -320,7 +368,7 @@ Como para descomprimir utilizamos as funções `lerArquivoTabelaBin()`, `montarA
 | Interface.cpp               |      1,60  kb   |       1,03 kb      |      0.64         |
 | TextoDeAjuda.txt            |      2,30  kb   |       1,49 kb      |      0.64         |
 
-#### Formato .zip
+### Formato .zip
 | Arquivo                     | Tamanho Original| Tamanho Comprimido |Taxa de Compressão |
 | --------------------------- | --------------- |--------------------|-------------------|
 | Huffman.cpp                 |      12,20 kb   |       3,50 kb      |      0.28         |
@@ -328,10 +376,11 @@ Como para descomprimir utilizamos as funções `lerArquivoTabelaBin()`, `montarA
 | Interface.cpp               |      1,60  kb   |       0.74 kb      |      0.46         |
 | TextoDeAjuda.txt            |      2,30  kb   |       1,10 kb      |      0.47         |
 
-#### Formato .7zip
+### Formato .7zip
 | Arquivo                     | Tamanho Original| Tamanho Comprimido |Taxa de Compressão |
 | --------------------------- | --------------- |--------------------|-------------------|
 | Huffman.cpp                 |      12,20 kb   |       3,30 kb      |      0.27         |
 | Tabela.cpp                  |      6,40  kb   |       2,00 kb      |      0.31         |
 | Interface.cpp               |      1,60  kb   |       0,79 kb      |      0.49         |
 | TextoDeAjuda.txt            |      2,30  kb   |       1,10 kb      |      0.47         |
+
